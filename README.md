@@ -7,6 +7,7 @@
     - [BACH](#bach)
     - [Osteosarcoma](#osteosarcoma)
   - [Architectures](#architectures)
+    - [Overall architecture](#overall-architecture)
     - [DARTS_ADP_N2](#darts_adp_n2)
     - [DARTS_ADP_N3](#darts_adp_n3)
     - [DARTS_ADP_N4](#darts_adp_n4)
@@ -32,7 +33,7 @@ BACH is a single-label breast cancer histology image dataset. More details can b
 This dataset contains osteosarcoma histology images and is available through [this website](https://wiki.cancerimagingarchive.net/pages/viewpage.action?pageId=52756935).
 
 ## Architectures
-**Overall architecture**
+### Overall architecture
 ![Network structure](/figures/network_macro_structure.png)
 Above is the overall structure of the searched networks, where the normal and reduction cells are searched. A cell can be represented as a directed acyclic graph with nodes and edges. Each node is a feature map, and each edge belongs to one of the candidate operations, including 3x3 and 5x5 seperable convolutions, 3x3 and 5x5 dilated separable convolutions, 3x3 max pooling, 3x3 average pooling, and skip-connection.
 
