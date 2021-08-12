@@ -2,7 +2,14 @@
 - [DARTS-ADP](#darts-adp)
   - [Introduction](#introduction)
   - [Datasets](#datasets)
+    - [ADP](#adp)
+    - [BCSS](#bcss)
+    - [BACH](#bach)
+    - [Osteosarcoma](#osteosarcoma)
   - [Architectures](#architectures)
+    - [DARTS_ADP_N2](#darts_adp_n2)
+    - [DARTS_ADP_N3](#darts_adp_n3)
+    - [DARTS_ADP_N4](#darts_adp_n4)
   - [Performance](#performance)
   - [Usage](#usage)
     - [Pretrained models](#pretrained-models)
@@ -12,16 +19,16 @@ We use [Differentiable Architecture Search (DARTS)](https://github.com/quark0/da
 
 ## Datasets
 We search the architectures on the ADP dataset and transfer them to three more datasets including BCSS, BACH, and Osteosarcoma.
-- **ADP**
+### ADP
 ADP is a multi-label histological tissue type dataset. This is where the architectures are searched. More details can be found in the [ADP Website](https://www.dsp.utoronto.ca/projects/ADP/) and [this paper](https://openaccess.thecvf.com/content_CVPR_2019/html/Hosseini_Atlas_of_Digital_Pathology_A_Generalized_Hierarchical_Histological_Tissue_Type-Annotated_CVPR_2019_paper.html).
 
-- **BCSS**
+### BCSS
 BCSS is a multi-label breast cancer tissue dataset. More details can be found [here](https://academic.oup.com/bioinformatics/article/35/18/3461/5307750).
 
-- **BACH**
+### BACH
 BACH is a single-label breast cancer histology image dataset. More details can be found in [this paper](https://www.sciencedirect.com/science/article/abs/pii/S1361841518307941).
 
-- **Osteosarcoma**
+### Osteosarcoma
 This dataset contains osteosarcoma histology images and is available through [this website](https://wiki.cancerimagingarchive.net/pages/viewpage.action?pageId=52756935).
 
 ## Architectures
@@ -31,15 +38,15 @@ Above is the overall structure of the searched networks, where the normal and re
 
 We alter the number of nodes and search for the optimum architectures in each configuration. Here we present three best-performing architectures with different number of nodes.
 
-- **DARTS_ADP_N2**
+### DARTS_ADP_N2
 This network contains 2 nodes in each cell.
 ![DARTS_ADP_N2](figures/cells_n_2_c_4.png) 
 
-- **DARTS_ADP_N3**
+### DARTS_ADP_N3
 This network contains 3 nodes in each cell.
 ![DARTS_ADP_N3](figures/cells_n_3_c_4.png)
 
-- **DARTS_ADP_N4**
+### DARTS_ADP_N4
 This network contains 4 nodes in each cell.
 ![DARTS_ADP_N4](figures/cells_n_4_c_4.png)
 
