@@ -14,13 +14,13 @@ import torchvision.datasets as dset
 import torch.backends.cudnn as cudnn
 
 from torch.autograd import Variable
-from model import NetworkADP as Network
+from model import DARTS_ADP_N2, DARTS_ADP_N3, DARTS_ADP_N4
 
 # for ADP dataset only
 from ADP_utils.classesADP import classesADP
 
 parser = argparse.ArgumentParser("adp")
-parser.add_argument('--data', type=str, default='../data', help='location of the data corpus')
+parser.add_argument('--data', type=str, default='./data', help='location of the data corpus')
 parser.add_argument('--dataset', type=str, default='ADP', help='choose dataset: ADP, BCSS, BACH, OS')
 parser.add_argument('--batch_size', type=int, default=96, help='batch size')
 parser.add_argument('--learning_rate', type=float, default=0.025, help='init learning rate')
@@ -29,8 +29,6 @@ parser.add_argument('--weight_decay', type=float, default=3e-4, help='weight dec
 parser.add_argument('--report_freq', type=float, default=50, help='report frequency')
 parser.add_argument('--gpu', type=int, default=0, help='gpu device id')
 parser.add_argument('--epochs', type=int, default=600, help='num of training epochs')
-parser.add_argument('--init_channels', type=int, default=36, help='num of init channels')
-parser.add_argument('--model_path', type=str, default='saved_models', help='path to save the model')
 parser.add_argument('--auxiliary', action='store_true', default=False, help='use auxiliary tower')
 parser.add_argument('--auxiliary_weight', type=float, default=0.4, help='weight for auxiliary loss')
 parser.add_argument('--cutout', action='store_true', default=False, help='use cutout')
@@ -41,9 +39,11 @@ parser.add_argument('--seed', type=int, default=0, help='random seed')
 parser.add_argument('--arch', type=str, default='DARTS_ADP_N4', help='choose network architecture: DARTS_ADP_N2, DARTS_ADP_N3, DARTS_ADP_N4')
 parser.add_argument('--grad_clip', type=float, default=5, help='gradient clipping')
 parser.add_argument('--image_size', type=int, default=272, help='ADP image size')
+# ADP only
+parser.add_argument('--adp_level', type=str, default='L3', help='ADP label level')
 args = parser.parse_args()
 
-args.save = 'eval-{}-{}-size-{}-{}'.format(args.save, args.arch, args.adp_size, time.strftime("%Y%m%d-%H%M%S"))
+args.save = 'train-{}-arch-{}-size-{}-seed-{}-{}'.format(args.save, args.arch, args.image_size, args.seed, time.strftime("%Y%m%d-%H%M%S"))
 utils.create_exp_dir(args.save, scripts_to_save=glob.glob('*.py'))
 
 log_format = '%(asctime)s %(message)s'
@@ -54,13 +54,13 @@ fh.setFormatter(logging.Formatter(log_format))
 logging.getLogger().addHandler(fh)
 
 if args.dataset == 'ADP':
-    n_classes = classesADP['L3']['numClasses']
+    n_classes = classesADP[args.adp_level]['numClasses']
 elif args.dataset == 'BCSS':
     n_classes = 10
 elif args.dataset == 'BACH' or args.dataset == 'OS':
     n_classes = 4
 else:
-    logging.info('Unknown dataset')
+    logging.info('Unknown dataset!')
     sys.exit(1)
 
 def main():
@@ -131,7 +131,15 @@ def main():
         criterion = criterion.cuda()
 
     # model
-    model = Network(args.init_channels, n_classes, 4, args.auxiliary, genotype)
+    if args.arch == 'DARTS_ADP_N2':
+        model = DARTS_ADP_N2(n_classes, args.auxiliary)
+    elif args.arch == 'DARTS_ADP_N3':
+        model = DARTS_ADP_N3(n_classes, args.auxiliary)
+    elif args.arch == 'DARTS_ADP_N4':
+        model = DARTS_ADP_N4(n_classes, args.auxiliary)
+    else:
+        logging.info('Unknown architecture!')
+        sys.exit(1)
     model = model.cuda()
 
     logging.info("param size = %fM", utils.count_parameters_in_MB(model))
@@ -165,17 +173,21 @@ def main():
         utils.save(model, os.path.join(args.save, 'last_weights.pt'))
     
     # test
+    if args.arch == 'DARTS_ADP_N2':
+        model_test = DARTS_ADP_N2(n_classes, args.auxiliary)
+    elif args.arch == 'DARTS_ADP_N3':
+        model_test = DARTS_ADP_N3(n_classes, args.auxiliary)
+    elif args.arch == 'DARTS_ADP_N4':
+        model_test = DARTS_ADP_N4(n_classes, args.auxiliary)
+    model_test = model_test.cuda()
     # use last weights
     logging.info("Test using last weights ...")
-    model_test = Network(args.init_channels, n_classes, 4, args.auxiliary, genotype)
-    model_test = model_test.cuda()
     utils.load(model_test, os.path.join(args.save, 'last_weights.pt'))
     model_test.drop_path_prob = args.drop_path_prob
     test_acc1, test_acc5, test_obj = infer(test_queue, model_test, criterion)
     logging.info('test_acc_1 %f, test_acc_5 %f', test_acc1, test_acc5)
     # use best weights on valid set
     logging.info("Test using best weights ...")
-    model_test = Network(args.init_channels, n_classes, 4, args.auxiliary, genotype)
     model_test = model_test.cuda()
     utils.load(model_test, os.path.join(args.save, 'best_weights.pt'))
     model_test.drop_path_prob = args.drop_path_prob

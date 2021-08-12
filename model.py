@@ -3,7 +3,9 @@ import torch.nn as nn
 from operations import *
 from torch.autograd import Variable
 from utils import drop_path
+from collections import namedtuple
 
+Genotype = namedtuple('Genotype', 'normal normal_concat reduce reduce_concat')
 
 class Cell(nn.Module):
 
@@ -82,10 +84,10 @@ class AuxiliaryHeadADP(nn.Module):
     return x
 
 
-class NetworkADP(nn.Module):
+class DARTS_ADP(nn.Module):
 
   def __init__(self, C, num_classes, layers, auxiliary, genotype):
-    super(NetworkADP, self).__init__()
+    super(DARTS_ADP, self).__init__()
     self._layers = layers
     self._auxiliary = auxiliary
 
@@ -129,3 +131,78 @@ class NetworkADP(nn.Module):
     out = self.global_pooling(s1)
     logits = self.classifier(out.view(out.size(0),-1))
     return logits, logits_aux
+
+def DARTS_ADP_N2(num_classes, auxiliary=False):
+
+  genotype = Genotype(
+    normal=[
+      ('max_pool_3x3', 1), 
+      ('max_pool_3x3', 0), 
+      ('dil_conv_5x5', 2), 
+      ('max_pool_3x3', 1)
+    ], 
+    normal_concat=range(2, 4), 
+    reduce=[
+      ('sep_conv_5x5', 0), 
+      ('max_pool_3x3', 1), 
+      ('max_pool_3x3', 2), 
+      ('dil_conv_5x5', 0)
+    ], 
+    reduce_concat=range(2, 4)
+  )
+
+  return DARTS_ADP(36, num_classes, 4, auxiliary, genotype)
+
+def DARTS_ADP_N3(num_classes, auxiliary=False):
+
+  genotype = Genotype(
+    normal=[
+      ('max_pool_3x3', 0), 
+      ('max_pool_3x3', 1), 
+      ('sep_conv_5x5', 2), 
+      ('max_pool_3x3', 1), 
+      ('dil_conv_5x5', 3), 
+      ('max_pool_3x3', 1)
+    ], 
+    normal_concat=range(2, 5), 
+    reduce=[
+      ('max_pool_3x3', 0), 
+      ('dil_conv_5x5', 1), 
+      ('max_pool_3x3', 0), 
+      ('max_pool_3x3', 2), 
+      ('skip_connect', 1), 
+      ('max_pool_3x3', 0)
+    ], 
+    reduce_concat=range(2, 5)
+  )
+
+  return DARTS_ADP(36, num_classes, 4, auxiliary, genotype)
+
+def DARTS_ADP_N4(num_classes, auxiliary=False):
+
+  genotype = Genotype(
+    normal=[
+      ('max_pool_3x3', 0), 
+      ('max_pool_3x3', 1), 
+      ('max_pool_3x3', 0), 
+      ('skip_connect', 2), 
+      ('max_pool_3x3', 0), 
+      ('max_pool_3x3', 2), 
+      ('dil_conv_3x3', 4), 
+      ('max_pool_3x3', 0)
+    ], 
+    normal_concat=range(2, 6), 
+    reduce=[
+      ('max_pool_3x3', 0), 
+      ('max_pool_3x3', 1), 
+      ('dil_conv_5x5', 2), 
+      ('max_pool_3x3', 0), 
+      ('sep_conv_5x5', 2), 
+      ('max_pool_3x3', 0), 
+      ('dil_conv_3x3', 2), 
+      ('max_pool_3x3', 4)
+    ], 
+    reduce_concat=range(2, 6)
+  )
+
+  return DARTS_ADP(36, num_classes, 4, auxiliary, genotype)
