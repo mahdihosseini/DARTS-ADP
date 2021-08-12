@@ -7,7 +7,6 @@ import utils
 import logging
 import argparse
 import torch.nn as nn
-import genotypes
 import torch.utils
 import torchvision.datasets as dset
 import torch.backends.cudnn as cudnn
@@ -27,6 +26,8 @@ parser.add_argument('--report_freq', type=float, default=50, help='report freque
 parser.add_argument('--gpu', type=int, default=0, help='gpu device id')
 parser.add_argument('--model_path', type=str, default='./pretrained/ADP/darts_adp_n4.pt', help='path of pretrained model')
 parser.add_argument('--auxiliary', action='store_true', default=False, help='use auxiliary tower')
+parser.add_argument('--cutout', action='store_true', default=False, help='use cutout')
+parser.add_argument('--cutout_length', type=int, default=16, help='cutout length')
 parser.add_argument('--drop_path_prob', type=float, default=0.2, help='drop path probability')
 parser.add_argument('--seed', type=int, default=0, help='random seed')
 parser.add_argument('--arch', type=str, default='DARTS_ADP_N4', help='choose network architecture: DARTS_ADP_N2, DARTS_ADP_N3, DARTS_ADP_N4')
@@ -113,6 +114,7 @@ def main():
     else:
         logging.info('Unknown architecture!')
         sys.exit(1)
+    model = model.cuda()
     utils.load(model, args.model_path)
     model.drop_path_prob = args.drop_path_prob
     logging.info("param size = %fM", utils.count_parameters_in_MB(model))
@@ -130,8 +132,8 @@ def infer(valid_queue, model, criterion):
     infered_data_size = 0
     with torch.no_grad():
         for step, (input, target) in enumerate(valid_queue):
-            input = Variable(input, volatile=True).cuda()
-            target = Variable(target, volatile=True).cuda(async=True)
+            input = input.cuda()
+            target = target.cuda(non_blocking=True)
 
             logits, _ = model(input)
             loss = criterion(logits, target)

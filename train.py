@@ -8,7 +8,6 @@ import utils
 import logging
 import argparse
 import torch.nn as nn
-import genotypes
 import torch.utils
 import torchvision.datasets as dset
 import torch.backends.cudnn as cudnn
@@ -43,7 +42,7 @@ parser.add_argument('--image_size', type=int, default=272, help='ADP image size'
 parser.add_argument('--adp_level', type=str, default='L3', help='ADP label level')
 args = parser.parse_args()
 
-args.save = 'train-{}-arch-{}-size-{}-seed-{}-{}'.format(args.save, args.arch, args.image_size, args.seed, time.strftime("%Y%m%d-%H%M%S"))
+args.save = 'Train-{}-data-{}-arch-{}-{}'.format(args.save, args.dataset, args.arch, time.strftime("%Y%m%d-%H%M%S"))
 utils.create_exp_dir(args.save, scripts_to_save=glob.glob('*.py'))
 
 log_format = '%(asctime)s %(message)s'
@@ -76,9 +75,6 @@ def main():
     torch.cuda.manual_seed(args.seed)
     logging.info('gpu device = %d' % args.gpu)
     logging.info("args = %s", args)
-
-    genotype = eval("genotypes.%s" % args.arch)
-    logging.info('genotype = %s', genotype)
 
     # dataset
     if args.dataset == 'ADP':
@@ -202,8 +198,8 @@ def train(train_queue, model, criterion, optimizer):
 
     trained_data_size = 0
     for step, (input, target) in enumerate(train_queue):
-        input = Variable(input).cuda()
-        target = Variable(target).cuda(async=True)
+        input = input.cuda()
+        target = target.cuda(non_blocking=True)
 
         optimizer.zero_grad()
         logits, logits_aux = model(input)
@@ -259,8 +255,8 @@ def infer(valid_queue, model, criterion):
     infered_data_size = 0
     with torch.no_grad():
         for step, (input, target) in enumerate(valid_queue):
-            input = Variable(input, volatile=True).cuda()
-            target = Variable(target, volatile=True).cuda(async=True)
+            input = input.cuda()
+            target = target.cuda(non_blocking=True)
 
             logits, _ = model(input)
             loss = criterion(logits, target)
