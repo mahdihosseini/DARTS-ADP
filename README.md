@@ -22,22 +22,19 @@ We propose three networks for Computational Pathology (CPath) applications. The 
 > *arXiv technical report ([arXiv](http://arxiv.org/))*
 > 
 ## Architectures
-### Overall architecture
+- **Overall architecture**
 ![Network structure](/figures/network_macro_structure.png)
 Above is the overall structure of the searched networks, where the normal and reduction cells are searched. A cell can be represented as a directed acyclic graph with nodes and edges. Each node is a feature map, and each edge belongs to one of the candidate operations, including 3x3 and 5x5 seperable convolutions, 3x3 and 5x5 dilated separable convolutions, 3x3 max pooling, 3x3 average pooling, and skip-connection.
 
 We alter the number of nodes and search for the optimum architectures in each configuration. Here we present three best-performing architectures with different number of nodes.
 
-### DARTS_ADP_N2
-This network contains 2 nodes in each cell.
+- **DARTS_ADP_N2:** each cell has 2 nodes.
 ![DARTS_ADP_N2](figures/cells_n_2_c_4.png) 
 
-### DARTS_ADP_N3
-This network contains 3 nodes in each cell.
+- **DARTS_ADP_N3:** each cell has 3 nodes.
 ![DARTS_ADP_N3](figures/cells_n_3_c_4.png)
 
-### DARTS_ADP_N4
-This network contains 4 nodes in each cell.
+- **DARTS_ADP_N4:** each cell has 4 nodes.
 ![DARTS_ADP_N4](figures/cells_n_4_c_4.png)
 
 <!-- ## Introduction
@@ -45,17 +42,36 @@ We use [Differentiable Architecture Search (DARTS)](https://github.com/quark0/da
 
 ## Datasets
 We search the architectures on the ADP dataset and transfer them to three more datasets including BCSS, BACH, and Osteosarcoma.
-### ADP
-ADP is a multi-label histological tissue type dataset. This is where the architectures are searched. More details can be found in the [ADP Website](https://www.dsp.utoronto.ca/projects/ADP/) and [this paper](https://openaccess.thecvf.com/content_CVPR_2019/html/Hosseini_Atlas_of_Digital_Pathology_A_Generalized_Hierarchical_Histological_Tissue_Type-Annotated_CVPR_2019_paper.html).
+- **ADP:** a multi-label histological tissue type dataset. This is where the architectures are searched. More details can be found in the [ADP Website](https://www.dsp.utoronto.ca/projects/ADP/) and [this paper](https://openaccess.thecvf.com/content_CVPR_2019/html/Hosseini_Atlas_of_Digital_Pathology_A_Generalized_Hierarchical_Histological_Tissue_Type-Annotated_CVPR_2019_paper.html).
 
-### BCSS
-BCSS is a multi-label breast cancer tissue dataset. More details can be found [here](https://academic.oup.com/bioinformatics/article/35/18/3461/5307750).
+- **BCSS:** a multi-label breast cancer tissue dataset. More details can be found [here](https://academic.oup.com/bioinformatics/article/35/18/3461/5307750).
 
-### BACH
-BACH is a single-label breast cancer histology image dataset. More details can be found in [this paper](https://www.sciencedirect.com/science/article/abs/pii/S1361841518307941).
+- **BACH:** a single-label breast cancer histology image dataset. More details can be found in [this paper](https://www.sciencedirect.com/science/article/abs/pii/S1361841518307941).
 
-### Osteosarcoma
-This dataset contains osteosarcoma histology images and is available through [this website](https://wiki.cancerimagingarchive.net/pages/viewpage.action?pageId=52756935).
+- **Osteosarcoma:** contains osteosarcoma histology images and is available through [this website](https://wiki.cancerimagingarchive.net/pages/viewpage.action?pageId=52756935).
+
+## Searching procedure
+![Overview](figures/overview.png)
+The searching is based on [DARTS](https://github.com/quark0/darts). We improve the existing DARTS framework with a **probing metric** and an **adaptive optimizer**.
+
+### Probing metric
+We apply [stable rank](https://github.com/mahdihosseini/Adas) to monitor the learning process of convolutional layers during searching, and show that the default DARTS lacks proper learning rate tuning.
+
+**Experiments on CIFAR-100**
+Each column corresponds to a different initial learning rate. 
+<p align="center">
+<img src="figures/kg_weight_compare.png" alt="knowledge_gain_weight_compare" width="500"/>
+</p>
+
+With larger initial learning rate:
+- More layers generate higher stable rank, meaning they are learning better.
+- The preferance over skip-connection (a common issue when searched on CV datasets) is suppressed, meaning that the resulting network has more learnable parameters and thus performs better.
+
+We show that the default DARTS (left column) lacks proper learning rate tuning. For more details, please refer to the [paper](http://arxiv.org/).
+### Adaptive optimizer
+We change the default SGD optimizer to [Adas](https://github.com/mahdihosseini/Adas), an adaptive optimizer that automatically tunes the learning rates for each layer based on their stable rank evolution. 
+![Adas](figures/adas.png)
+Adas helps reduce the gap between training and validation error during searching, leading to more generalizable architectures with higher test accuracy. For more details, please refer to the [paper](http://arxiv.org/).
 
 
 ## Performance
