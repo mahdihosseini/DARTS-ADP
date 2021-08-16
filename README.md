@@ -57,8 +57,7 @@ The searching is based on [DARTS](https://github.com/quark0/darts). We improve t
 ### Probing metric
 We apply [stable rank](https://github.com/mahdihosseini/Adas) to monitor the learning process of convolutional layers during searching, and show that the default DARTS lacks proper learning rate tuning.
 
-**Experiments on CIFAR-100**
-Each column corresponds to a different initial learning rate. 
+These are experiments on CIFAR-100. Each column corresponds to a different initial learning rate. 
 <p align="center">
 <img src="figures/kg_weight_compare.png" alt="knowledge_gain_weight_compare" width="500"/>
 </p>
