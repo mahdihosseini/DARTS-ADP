@@ -17,9 +17,9 @@
 
 We propose three networks for Computational Pathology (CPath) applications. The network architectures are searched on [ADP](https://www.dsp.utoronto.ca/projects/ADP/) using [Differentiable Architecture Search (DARTS)](https://github.com/quark0/darts) and can be well transfered to other CPath datasets. 
 
-> [**Probeable DARTS with Application to Computational Pathology**](http://arxiv.org/),            
+> [**Probeable DARTS with Application to Computational Pathology**](https://arxiv.org/abs/2108.06859),            
 > Sheyang Tang, Mahdi S. Hosseini, Lina Chen, Sonal Varma, Corwyn Rowsell, Savvas Damaskinos, Konstantinos N. Plataniotis, Zhou Wang        
-> *arXiv technical report ([arXiv](http://arxiv.org/))*
+> *arXiv technical report ([arXiv: 2108.06859](https://arxiv.org/abs/2108.06859))*
 > 
 ## Architectures
 - **Overall architecture**
@@ -66,11 +66,11 @@ With larger initial learning rate:
 - More layers generate higher stable rank, meaning they are learning better.
 - The preferance over skip-connection (a common issue when searched on CV datasets) is suppressed, meaning that the resulting network has more learnable parameters and thus performs better.
 
-We show that the default DARTS (left column) lacks proper learning rate tuning. For more details, please refer to the [paper](http://arxiv.org/).
+We show that the default DARTS (left column) lacks proper learning rate tuning. For more details, please refer to the [paper](https://arxiv.org/abs/2108.06859).
 ### Adaptive optimizer
 We change the default SGD optimizer to [Adas](https://github.com/mahdihosseini/Adas), an adaptive optimizer that automatically tunes the learning rates for each layer based on their stable rank evolution. 
 ![Adas](figures/adas.png)
-Adas helps reduce the gap between training and validation error during searching, leading to more generalizable architectures with higher test accuracy. For more details, please refer to the [paper](http://arxiv.org/).
+Adas helps reduce the gap between training and validation error during searching, leading to more generalizable architectures with higher test accuracy. For more details, please refer to the [paper](https://arxiv.org/abs/2108.06859).
 
 
 ## Performance
