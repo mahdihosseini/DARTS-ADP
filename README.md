@@ -17,9 +17,9 @@
 
 We propose three networks for Computational Pathology (CPath) applications. The network architectures are searched on [ADP](https://www.dsp.utoronto.ca/projects/ADP/) using [Differentiable Architecture Search (DARTS)](https://github.com/quark0/darts) and can be well transfered to other CPath datasets. 
 
-> [**Probeable DARTS with Application to Computational Pathology**](https://arxiv.org/abs/2108.06859),            
+> [**Probeable DARTS with Application to Computational Pathology**](https://openaccess.thecvf.com/content/ICCV2021W/CDPath/html/Tang_Probeable_DARTS_With_Application_to_Computational_Pathology_ICCVW_2021_paper.html),            
 > Sheyang Tang, Mahdi S. Hosseini, Lina Chen, Sonal Varma, Corwyn Rowsell, Savvas Damaskinos, Konstantinos N. Plataniotis, Zhou Wang        
-> *In Proceedings of the IEEE/CVF International Conference on Computer Vision ([ICCV2021-CDPath](https://openaccess.thecvf.com/content/ICCV2021W/CDPath/html/Tang_Probeable_DARTS_With_Application_to_Computational_Pathology_ICCVW_2021_paper.html))*
+> *In Proceedings of the IEEE/CVF International Conference on Computer Vision ([ICCV2021-CDPath](http://vcmi.inesctec.pt/cdpath_iccv/))*
 > 
 ## Architectures
 - **Overall architecture**
