@@ -19,7 +19,7 @@ We propose three networks for Computational Pathology (CPath) applications. The 
 
 > [**Probeable DARTS with Application to Computational Pathology**](https://arxiv.org/abs/2108.06859),            
 > Sheyang Tang, Mahdi S. Hosseini, Lina Chen, Sonal Varma, Corwyn Rowsell, Savvas Damaskinos, Konstantinos N. Plataniotis, Zhou Wang        
-> *arXiv technical report ([arXiv: 2108.06859](https://arxiv.org/abs/2108.06859))*
+> *In Proceedings of the IEEE/CVF International Conference on Computer Vision ([ICCV2021-CDPath](https://openaccess.thecvf.com/content/ICCV2021W/CDPath/html/Tang_Probeable_DARTS_With_Application_to_Computational_Pathology_ICCVW_2021_paper.html))*
 > 
 ## Architectures
 - **Overall architecture**
